@@ -13,7 +13,8 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "./../element-ui/types",//吧this.$message的声明加到配置文件中
     ],
     "paths": {
       "@/*": [

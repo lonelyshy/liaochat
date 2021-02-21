@@ -23,6 +23,15 @@ const routes: Array<RouteConfig> = [
     component: () => {
       return import(/* webpackChunkName: "about" */ "../views/About.vue")
     }
+  },
+  {
+    path: "/ChatRoom",
+    name: "ChatRoom",
+    component: () => {
+      return import(
+        /* webpackChunkName: "ChatRoom" */ "../views/ChatRoom/index.vue"
+      )
+    }
   }
 ]
 

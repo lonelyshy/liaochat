@@ -1,6 +1,11 @@
 module.exports = {
   devServer: {
-    hot: true, //自动保存
-    open: true //自动启动
+    disableHostCheck: true //webpack4.0 开启热更新
+  },
+  chainWebpack: (config) => {
+    config.plugin("html").tap((args) => {
+      args[0].title = "聊聊chat"
+      return args
+    })
   }
 }

@@ -6,37 +6,96 @@
         type="primary"
         round
         plain
-        @click.native="chatVisibleChange"
+        @click="chatVisibleChange"
       >
         创建聊天室
       </el-button>
-      <div v-show="chatVisible">
-        <!-- <el-form>
-          <el-form-item label="会议名称">
-            <el-input v-model="chatName"></el-input>
-          </el-form-item>
-        </el-form> -->
-        haahah
-      </div>
 
-      <el-button class="join-chat" type="primary" round plain>
+      <el-form v-if="chatVisible">
+        <el-form-item label="聊天室名称">
+          <el-input
+            v-model="chatName"
+            placeholder="请输入聊天室名称"
+          ></el-input>
+        </el-form-item>
+        <el-button @click="creatChatRoom">
+          创建
+        </el-button>
+      </el-form>
+
+      <el-button
+        class="join-chat"
+        type="primary"
+        round
+        plain
+        @click="joinVisibleChange"
+      >
         加入聊天室
       </el-button>
+      <el-form v-if="joinChatVisible">
+        <el-form-item label="聊天室名称">
+          <el-input v-model="chatId" placeholder="请输入聊天室名称"></el-input>
+        </el-form-item>
+        <el-button @click="creatChatRoom">
+          进入
+        </el-button>
+      </el-form>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue } from "vue-property-decorator"
+import { Vue, Component } from "vue-property-decorator"
+import API from "../../api/index"
+@Component({
+  name: "Register" //一定要用装饰器 声明这个类是组件
+})
 export default class Register extends Vue {
-  chatVisible = true
-
+  //创建聊天室 是否显示
+  chatVisible = false
+  //聊天室名称
   chatName = ""
-
+  //加入聊天室 是否显示
+  joinChatVisible = false
+  //聊天室名称
+  chatId = ""
+  //控制创建聊天室
   chatVisibleChange() {
-    console.log("为什么不起作用")
     this.chatVisible = !this.chatVisible
-    console.log(this.chatVisible)
+    this.joinChatVisible = false
+  }
+  //加入聊天室
+  joinVisibleChange() {
+    this.joinChatVisible = !this.joinChatVisible
+    this.chatVisible = false
+  }
+  //创建聊天室
+  async creatChatRoom() {
+    const params = {
+      name: this.chatName
+    }
+    try {
+      const res = await API.addRoom(params)
+      if (!res.data.code) {
+        this.$message({
+          showClose: true,
+          message: "创建房间成功",
+          type: "success"
+        })
+        this.$router.push({
+          name: "ChatRoom",
+          query: { roomName: this.chatName }
+        })
+      } else {
+        this.$message({
+          showClose: true,
+          message: "创建房间失败,房间已存在",
+          type: "error"
+        })
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 }
 </script>
@@ -51,6 +110,7 @@ export default class Register extends Vue {
   .created {
     display: flex;
     flex-direction: column;
+    align-items: center;
     .el-button + .el-button {
       margin-left: 0px;
     }
