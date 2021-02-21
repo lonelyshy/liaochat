@@ -5,15 +5,23 @@
         <h1>roomName:{{ roomName }}</h1>
       </div>
       <div class="chat-content">
+        <chat-message
+          v-for="(item, key) in chatList"
+          :key="key"
+          :msg="item.msg"
+          :userName="userList[item.socketId]"
+          :direction="item.socketId === socket.id ? 'right' : 'left'"
+        >
+        </chat-message>
+        <!-- <chat-message direction="right"> </chat-message>
         <chat-message> </chat-message>
-        <chat-message> </chat-message>
-        <chat-message> </chat-message>
+        <chat-message> </chat-message> -->
       </div>
       <div class="chat-user">
         <user-card
           v-for="(user, index) in userList"
           :key="index"
-          :userName="user.userName"
+          :userName="user"
         >
         </user-card>
       </div>
@@ -23,7 +31,7 @@
         </div>
         <div class="chat-send-button">
           <el-button>关闭</el-button>
-          <el-button>发送</el-button>
+          <el-button @click="sendMessage">发送</el-button>
         </div>
       </div>
     </div>
@@ -85,12 +93,13 @@ export default class ChatRoom extends Vue {
   userList: any = []
   userNameDialog = false
   socket: any
+  chatList: any = []
   submitUserName() {
     ;(this.$refs.userInfoForm as any).validate((valid: any) => {
       if (valid) {
         //如果校验通过
         this.userNameDialog = false
-        console.log(this.userInfo.name)
+        // console.log(this.userInfo.name)
         //发送用户名称
         this.socket.emit("addNewUserServer", { userName: this.userInfo.name })
       } else {
@@ -103,17 +112,40 @@ export default class ChatRoom extends Vue {
     this.userNameDialog = false
     this.$router.push({ name: "Register" })
   }
+  sendMessage() {
+    if (this.chatSendContent.match(/^[\s]*$/)) {
+      //如果全是空格或者空白符
+      console.log("不发送")
+    } else {
+      this.socket.emit("sendMessageServer", this.chatSendContent)
+      this.chatSendContent = "" //清空输入框
+    }
+  }
   created() {
     this.roomName = this.$route.query.roomName as string
     this.userNameDialog = true
-    const io = require("socket.io-client")
-    this.socket = io("http://localhost:3000")
-    console.log(this.socket)
-    // this.socket.emit("sendMessage", "这是一条新消息")
-    this.socket.on("addNewUserclient", (data: any) => {
-      this.userList = data
-      console.log(this.userList)
-    })
+    try {
+      const io = require("socket.io-client")
+      this.socket = io("http://localhost:3000", {
+        query: {
+          roomName: this.roomName
+        }
+      })
+      console.log(this.socket)
+      // this.socket.emit("sendMessage", "这是一条新消息")
+      this.socket.on("addNewUserclient", (data: any) => {
+        this.userList = data
+        console.log(this.userList)
+      })
+      this.socket.on("sendMessageClient", (data: any) => {
+        this.chatList.push(data)
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  beforeDestroy() {
+    this.socket.close()
   }
 }
 </script>
