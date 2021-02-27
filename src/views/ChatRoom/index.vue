@@ -35,7 +35,7 @@
         </div>
       </div>
     </div>
-    <el-dialog
+    <!-- <el-dialog
       title="请输入用户名"
       :visible.sync="userNameDialog"
       width="30%"
@@ -68,7 +68,7 @@
         <el-button @click="quitRoom">退 出</el-button>
         <el-button type="primary" @click="submitUserName">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -85,28 +85,12 @@ import UserCard from "../../components/UserCard/index.vue"
 })
 export default class ChatRoom extends Vue {
   chatSendContent = ""
-  userInfo = {
-    name: ""
-  }
   roomName = ""
   //当前用户在线列表
   userList: any = []
   userNameDialog = false
   socket: any
   chatList: any = []
-  submitUserName() {
-    ;(this.$refs.userInfoForm as any).validate((valid: any) => {
-      if (valid) {
-        //如果校验通过
-        this.userNameDialog = false
-        // console.log(this.userInfo.name)
-        //发送用户名称
-        this.socket.emit("addNewUserServer", { userName: this.userInfo.name })
-      } else {
-        return false
-      }
-    })
-  }
   //退出当前房间
   quitRoom() {
     this.userNameDialog = false
@@ -139,6 +123,10 @@ export default class ChatRoom extends Vue {
       })
       this.socket.on("sendMessageClient", (data: any) => {
         this.chatList.push(data)
+      })
+      //发送用户名称
+      this.socket.emit("addNewUserServer", {
+        userName: this.$store.state.userInfo.userName
       })
     } catch (error) {
       console.log(error)
