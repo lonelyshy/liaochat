@@ -15,7 +15,9 @@
     </div>
     <div v-if="direction === 'right'" class="right">
       <div class="left-content">
-        <div class="img"></div>
+        <div class="img">
+          <el-image :src="userIcon"></el-image>
+        </div>
       </div>
       <div class="right-content">
         <div class="user-name">
@@ -44,6 +46,11 @@ export default class ChatMessage extends Vue {
     default: "这是学习"
   })
   msg?: string
+  @Prop({
+    type: String,
+    default: ""
+  })
+  userIcon?: string
 }
 </script>
 

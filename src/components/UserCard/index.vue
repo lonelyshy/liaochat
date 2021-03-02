@@ -1,7 +1,11 @@
 <template>
   <div class="user-card">
-    <div class="user-icon"></div>
-    <div class="user-name">{{ userName }}</div>
+    <div class="user-icon">
+      <el-image :src="userIcon"> </el-image>
+    </div>
+    <div class="user-name">
+      {{ userName }}
+    </div>
   </div>
 </template>
 
@@ -12,6 +16,7 @@ import { Component, Prop, Vue } from "vue-property-decorator"
 })
 export default class UserCard extends Vue {
   @Prop({ type: String, default: "用户名" }) userName!: string
+  @Prop({ type: String, default: "" }) userIcon!: string
 }
 </script>
 
@@ -19,11 +24,14 @@ export default class UserCard extends Vue {
 .user-card {
   display: flex;
   justify-content: flex-start;
+  align-items: center;
   .user-icon {
     width: 20px;
     height: 20px;
-    border-radius: 6px;
-    border: 1px red solid;
+    border-radius: 50%;
+  }
+  .user-name {
+    margin-left: 8px;
   }
 }
 </style>

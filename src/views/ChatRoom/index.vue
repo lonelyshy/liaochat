@@ -9,7 +9,8 @@
           v-for="(item, key) in chatList"
           :key="key"
           :msg="item.msg"
-          :userName="userList[item.socketId]"
+          :userName="userList[item.socketId].userName"
+          :userIcon="userList[item.socketId].userIcon"
           :direction="item.socketId === socket.id ? 'right' : 'left'"
         >
         </chat-message>
@@ -19,9 +20,10 @@
       </div>
       <div class="chat-user">
         <user-card
-          v-for="(user, index) in userList"
+          v-for="(user, key, index) in userList"
           :key="index"
-          :userName="user"
+          :userName="user.userName"
+          :userIcon="user.userIcon"
         >
         </user-card>
       </div>
@@ -127,7 +129,7 @@ export default class ChatRoom extends Vue {
       // this.socket.emit("sendMessage", "这是一条新消息")
       this.socket.on("addNewUserclient", (data: any) => {
         this.userList = data
-        console.log(this.userList)
+        console.log("this.userList", this.userList)
       })
       this.socket.on("sendMessageClient", (data: any) => {
         this.chatList.push(data)
