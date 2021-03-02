@@ -64,7 +64,7 @@ router.beforeEach((to, from, next) => {
   if (to.name === "UserName") {
     //
     next()
-  } else if ((store.state as any).userInfo.userName === "test") {
+  } else if ((store.state as any).userInfo.userName === "") {
     console.log("当前还没有注册")
     next({ path: "/UserName" })
   } else {

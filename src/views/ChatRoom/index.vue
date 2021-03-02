@@ -27,7 +27,12 @@
       </div>
       <div class="chat-send">
         <div class="chat-send-content">
-          <el-input type="textarea" v-model="chatSendContent"></el-input>
+          <el-input
+            type="textarea"
+            resize="none"
+            v-model="chatSendContent"
+            @keypress.enter.native="sendMessage($event)"
+          ></el-input>
         </div>
         <div class="chat-send-button">
           <el-button>关闭</el-button>
@@ -96,18 +101,21 @@ export default class ChatRoom extends Vue {
     this.userNameDialog = false
     this.$router.push({ name: "Register" })
   }
-  sendMessage() {
+  sendMessage($event: any) {
     if (this.chatSendContent.match(/^[\s]*$/)) {
       //如果全是空格或者空白符
       console.log("不发送")
     } else {
       this.socket.emit("sendMessageServer", this.chatSendContent)
-      this.chatSendContent = "" //清空输入框
     }
+    if ($event.keyCode === 13) {
+      $event.preventDefault() // 阻止浏览器默认换行操作
+    }
+    this.chatSendContent = ""
   }
   created() {
     this.roomName = this.$route.query.roomName as string
-    this.userNameDialog = true
+    // this.userNameDialog = true
     try {
       const io = require("socket.io-client")
       this.socket = io("http://localhost:3000", {
@@ -159,6 +167,7 @@ export default class ChatRoom extends Vue {
       position: absolute;
     }
     .chat-content {
+      overflow-x: hidden;
       height: 400px;
       width: 600px;
       top: 100px;

@@ -1,7 +1,7 @@
 const userInfo = {
   namespaced: true,
   state: () => ({
-    userName: "test",
+    userName: "",
     userPicUrl: "",
     socket: ""
   }),

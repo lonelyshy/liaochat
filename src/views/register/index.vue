@@ -11,12 +11,12 @@
         创建聊天室
       </el-button>
 
-      <el-form v-if="chatVisible">
+      <el-form v-show="chatVisible" @submit.native.prevent>
         <el-form-item label="聊天室名称">
           <el-input
             v-model="chatName"
             placeholder="请输入聊天室名称"
-            @keyup.enter.native="creatChatRoom"
+            @keypress.enter.native="creatChatRoom"
           ></el-input>
         </el-form-item>
         <el-button @click="creatChatRoom">
@@ -33,9 +33,13 @@
       >
         加入聊天室
       </el-button>
-      <el-form v-if="joinChatVisible">
+      <el-form v-show="joinChatVisible" @submit.native.prevent>
         <el-form-item label="聊天室名称">
-          <el-input v-model="chatId" placeholder="请输入聊天室名称"></el-input>
+          <el-input
+            v-model="chatId"
+            placeholder="请输入聊天室名称"
+            @keyup.enter.native="joinChatRoom"
+          ></el-input>
         </el-form-item>
         <el-button @click="joinChatRoom">
           进入
