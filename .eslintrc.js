@@ -20,6 +20,7 @@ module.exports = {
     "no-empty": 2, //块语句中的内容不能为空
     "no-var": 0, //禁用var，用let和const代替
     "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/no-var-requires": 0
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/no-unused-vars": ["off"]
   }
 }

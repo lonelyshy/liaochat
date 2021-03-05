@@ -10,20 +10,19 @@
       >
         创建聊天室
       </el-button>
-
-      <el-form v-show="chatVisible" @submit.native.prevent>
-        <el-form-item label="聊天室名称">
-          <el-input
-            v-model="chatName"
-            placeholder="请输入聊天室名称"
-            @keypress.enter.native="creatChatRoom"
-          ></el-input>
-        </el-form-item>
-        <el-button @click="creatChatRoom">
-          创建
+      <el-input
+        v-show="chatVisible"
+        v-model="chatName"
+        placeholder="请输入聊天室名称"
+        @keypress.enter.native="creatChatRoom"
+        class="created-chat-body"
+      >
+        <div slot="prepend">
+          聊天室名称
+        </div>
+        <el-button slot="append" icon="el-icon-zoom-in" @click="creatChatRoom">
         </el-button>
-      </el-form>
-
+      </el-input>
       <el-button
         class="join-chat"
         type="primary"
@@ -33,7 +32,7 @@
       >
         加入聊天室
       </el-button>
-      <el-form v-show="joinChatVisible" @submit.native.prevent>
+      <!-- <el-form v-show="joinChatVisible" @submit.native.prevent>
         <el-form-item label="聊天室名称">
           <el-input
             v-model="chatId"
@@ -44,7 +43,24 @@
         <el-button @click="joinChatRoom">
           进入
         </el-button>
-      </el-form>
+      </el-form> -->
+      <el-input
+        v-show="joinChatVisible"
+        v-model="chatId"
+        placeholder="请输入聊天室名称"
+        @keypress.enter.native="joinChatRoom"
+        class="join-chat-body"
+      >
+        <div slot="prepend">
+          聊天室名称
+        </div>
+        <el-button
+          slot="append"
+          icon="el-icon-s-promotion"
+          @click="creatChatRoom"
+        >
+        </el-button>
+      </el-input>
     </div>
   </div>
 </template>
@@ -153,6 +169,10 @@ export default class Register extends Vue {
     }
     .created-chat {
       width: 300px;
+    }
+    .created-chat-body,
+    .join-chat-body {
+      margin-top: 30px;
     }
     .join-chat {
       margin-top: 30px;

@@ -8,15 +8,13 @@
         <chat-message
           v-for="(item, key) in chatList"
           :key="key"
-          :msg="item.msg"
-          :userName="userList[item.socketId].userName"
-          :userIcon="userList[item.socketId].userIcon"
-          :direction="item.socketId === socket.id ? 'right' : 'left'"
+          :data="item.data"
+          :userName="item.userName"
+          :userIcon="item.userIcon"
+          :direction="item.direction"
+          :type="item.type"
         >
         </chat-message>
-        <!-- <chat-message direction="right"> </chat-message>
-        <chat-message> </chat-message>
-        <chat-message> </chat-message> -->
       </div>
       <div class="chat-user">
         <user-card
@@ -36,46 +34,27 @@
             @keypress.enter.native="sendMessage($event)"
           ></el-input>
         </div>
+        <div class="chat-send-file">
+          <el-upload
+            class="upload-image"
+            :before-upload="beforeUpload"
+            :show-file-list="false"
+            action="http://127.0.0.1:3000/singup"
+            :data="{ roomName: roomName }"
+            name="singleFile"
+            :on-success="fileUploadSuccess"
+          >
+            <i class="el-icon-picture" @click="sendFile"></i>
+          </el-upload>
+
+          <i class="el-icon-files"></i>
+        </div>
         <div class="chat-send-button">
           <el-button>关闭</el-button>
           <el-button @click="sendMessage">发送</el-button>
         </div>
       </div>
     </div>
-    <!-- <el-dialog
-      title="请输入用户名"
-      :visible.sync="userNameDialog"
-      width="30%"
-      :close-on-click-modal="false"
-      max-length="10"
-    >
-      <el-form ref="userInfoForm" :model="userInfo">
-        <el-form-item
-          prop="name"
-          :rules="[
-            {
-              required: true,
-              message: '用户名不能为空',
-              trigger: 'blur'
-            }
-          ]"
-        >
-          <el-input
-            type="text"
-            placeholder="请输入你的用户名称"
-            v-model="userInfo.name"
-            clearable
-            maxlength="10"
-            show-word-limit
-          >
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="quitRoom">退 出</el-button>
-        <el-button type="primary" @click="submitUserName">确 定</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
@@ -95,12 +74,10 @@ export default class ChatRoom extends Vue {
   roomName = ""
   //当前用户在线列表
   userList: any = []
-  userNameDialog = false
   socket: any
   chatList: any = []
   //退出当前房间
   quitRoom() {
-    this.userNameDialog = false
     this.$router.push({ name: "Register" })
   }
   sendMessage($event: any) {
@@ -108,16 +85,46 @@ export default class ChatRoom extends Vue {
       //如果全是空格或者空白符
       console.log("不发送")
     } else {
-      this.socket.emit("sendMessageServer", this.chatSendContent)
+      this.socket.emit("sendMessageServer", {
+        type: "txt",
+        data: this.chatSendContent
+      })
     }
     if ($event.keyCode === 13) {
       $event.preventDefault() // 阻止浏览器默认换行操作
     }
     this.chatSendContent = ""
   }
+
+  sendFile() {
+    console.log("sendFile")
+  }
+  fileUploadSuccess(response: any, file: any, fileList: any) {
+    //code为0上传成功
+    if (response.code === 0) {
+      console.log(response)
+      this.socket.emit("sendMessageServer", {
+        type: "image",
+        data: { imagePath: response.data.path.path }
+      })
+      console.log("")
+    }
+  }
+  beforeUpload(file: any) {
+    console.log(file)
+    const isJPG = file.type === "image/jpeg" || file.type === "image/png"
+    const isLt2M = file.size / 1024 / 1024 < 2
+
+    if (!isJPG) {
+      this.$message.error("上传头像图片只能是 JPG 格式!")
+    }
+    if (!isLt2M) {
+      this.$message.error("上传头像图片大小不能超过 2MB!")
+    }
+    return isJPG && isLt2M
+  }
   created() {
     this.roomName = this.$route.query.roomName as string
-    // this.userNameDialog = true
     try {
       const io = require("socket.io-client")
       this.socket = io("http://localhost:3000", {
@@ -129,9 +136,14 @@ export default class ChatRoom extends Vue {
       // this.socket.emit("sendMessage", "这是一条新消息")
       this.socket.on("addNewUserclient", (data: any) => {
         this.userList = data
-        console.log("this.userList", this.userList)
+        console.log("addNewUserclient this.userList", this.userList)
       })
-      this.socket.on("sendMessageClient", (data: any) => {
+      this.socket.on("sendMessageClient", (data1: any) => {
+        //收到消息
+        const { socketId, data } = data1
+        data.userName = this.userList[socketId].userName
+        data.userIcon = this.userList[socketId].userIcon
+        data.direction = socketId === this.socket.id ? "right" : "left"
         this.chatList.push(data)
       })
       //发送用户名称
@@ -170,7 +182,7 @@ export default class ChatRoom extends Vue {
     }
     .chat-content {
       overflow-x: hidden;
-      height: 400px;
+      height: 350px;
       width: 600px;
       top: 100px;
       border: 1px solid blueviolet;
@@ -186,12 +198,27 @@ export default class ChatRoom extends Vue {
     }
     .chat-send {
       position: absolute;
-      bottom: 0px;
+      bottom: 50px;
       width: 600px;
       height: 100px;
-      border: 1px red solid;
-      >>> .el-textarea__inner {
-        padding: 0px;
+      // border: 1px red solid;
+
+      .chat-send-file {
+        .upload-image {
+          display: inline-block;
+          margin-right: 5px;
+        }
+        width: 600px;
+        position: inherit;
+        padding: 5px;
+        top: 0px;
+      }
+      ::v-deep .el-textarea__inner {
+        background-color: transparent;
+        padding: 20px 5px 5px 5px;
+        // border: none;
+        border: 1px black solid;
+        border-top: 1px black solid;
       }
       .chat-send-button {
         margin-right: 10px;
