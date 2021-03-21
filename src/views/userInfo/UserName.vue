@@ -33,7 +33,7 @@ export default class UserName extends Vue {
     const params = {
       name: this.userName
     }
-    const res = await API.queryRoom(params)
+    const res = await API.queryRoom(params) //查询用户名是否重复
 
     this.loading = false //加载动画结束
     if (!res.data.code) {
@@ -41,7 +41,7 @@ export default class UserName extends Vue {
         message: "用户名重复",
         type: "error"
       })
-      return false
+      return false //用户名重复返回false
     }
     this.$store.commit("userInfo/UPDATE_USER_NAME", this.userName) //由于 userInfo开启了子模块，所以要有这种命名方式
     console.log(
