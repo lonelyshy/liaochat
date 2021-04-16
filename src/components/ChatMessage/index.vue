@@ -8,7 +8,8 @@
       </div>
       <div class="right-content">
         <div class="user-name">
-          {{ userName }}
+          <span>{{ userName }}</span>
+          <span style="margin-left:5px">{{ time }}</span>
         </div>
         <div class="user-content">
           <div v-if="type == 'txt'">{{ data }}</div>
@@ -19,6 +20,7 @@
               fit="fit"
             ></el-image>
           </div>
+          x
         </div>
       </div>
     </div>
@@ -30,7 +32,8 @@
       </div>
       <div class="right-content">
         <div class="user-name">
-          {{ userName }}
+          <span style="margin-right:5px">{{ time }}</span>
+          <span> {{ userName }}</span>
         </div>
         <div class="user-content">
           <div v-if="type == 'txt'">{{ data }}</div>
@@ -63,23 +66,31 @@ export default class ChatMessage extends Vue {
   //   default: "这是学习"
   // })
   // data?: any
+  //用户图标
   @Prop({
     type: String,
     default: ""
   })
   userIcon?: string
+  //消息type类型
   @Prop({
     type: String,
     default: ""
   })
+  // 发送消息的时间
   type?: string
+  @Prop({
+    type: String,
+    default: () => new Date().get
+  })
+  time?: string
 }
 </script>
 
 <style lang="scss" scoped>
 .chat-message {
   border: 1px solid blue;
-  width: 100%;
+  width: 590px;
   min-height: 70px;
   word-wrap: break-word;
   .left {

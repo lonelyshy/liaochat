@@ -4,18 +4,23 @@
       <div class="chat-name">
         <h1>roomName:{{ roomName }}</h1>
       </div>
+
       <div class="chat-content">
-        <chat-message
-          v-for="(item, key) in chatList"
-          :key="key"
-          :data="item.data"
-          :userName="item.userName"
-          :userIcon="item.userIcon"
-          :direction="item.direction"
-          :type="item.type"
-        >
-        </chat-message>
+        <el-scrollbar style="height:100%" ref="myScrollbar">
+          <chat-message
+            v-for="(item, key) in chatList"
+            :key="key"
+            :data="item.data"
+            :userName="item.userName"
+            :userIcon="item.userIcon"
+            :direction="item.direction"
+            :type="item.type"
+            :time="item.time"
+          >
+          </chat-message>
+        </el-scrollbar>
       </div>
+
       <div class="chat-user">
         <user-card
           v-for="(user, key, index) in userList"
@@ -32,6 +37,8 @@
             resize="none"
             v-model="chatSendContent"
             @keypress.enter.native="sendMessage($event)"
+            :autosize="{ minRows: 4, maxRows: 4 }"
+            placeholder="请输入要发送的内容..."
           ></el-input>
         </div>
         <div class="chat-send-file">
@@ -43,6 +50,7 @@
             :data="{ roomName: roomName }"
             name="singleFile"
             :on-success="fileUploadSuccess"
+            accept=".jpg,.jpeg,.png,.gif,.bmp,.JPG,.JPEG,.GIF,.BMP"
           >
             <i class="el-icon-picture" @click="sendFile"></i>
           </el-upload>
@@ -62,6 +70,7 @@
 import { Component, Vue } from "vue-property-decorator"
 import ChatMessage from "../../components/ChatMessage/index.vue"
 import UserCard from "../../components/UserCard/index.vue"
+import Utils from "@/utils/utils"
 @Component({
   name: "chatRoom",
   components: {
@@ -143,8 +152,14 @@ export default class ChatRoom extends Vue {
         const { socketId, data } = data1
         data.userName = this.userList[socketId].userName
         data.userIcon = this.userList[socketId].userIcon
-        data.direction = socketId === this.socket.id ? "right" : "left"
+        data.direction = socketId === this.socket.id ? "right" : "left" //判断消息在左还是右边
+        data.time = Utils.getNowTime()
         this.chatList.push(data)
+        console.log(this.chatList)
+        const scrollBar = this.$refs.myScrollbar as any
+        this.$nextTick(() => {
+          scrollBar.wrap.scrollTop = scrollBar.wrap.scrollHeight
+        })
       })
       //发送用户名称
       this.socket.emit("addNewUserServer", {
@@ -161,6 +176,10 @@ export default class ChatRoom extends Vue {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-scrollbar__wrap {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 .chat-room {
   height: 100%;
   width: 100%;
@@ -181,7 +200,6 @@ export default class ChatRoom extends Vue {
       position: absolute;
     }
     .chat-content {
-      overflow-x: hidden;
       height: 350px;
       width: 600px;
       top: 100px;
