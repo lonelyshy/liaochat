@@ -57,7 +57,7 @@
         <el-button
           slot="append"
           icon="el-icon-s-promotion"
-          @click="creatChatRoom"
+          @click="joinChatRoom"
         >
         </el-button>
       </el-input>

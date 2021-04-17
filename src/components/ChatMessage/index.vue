@@ -20,7 +20,6 @@
               fit="fit"
             ></el-image>
           </div>
-          x
         </div>
       </div>
     </div>
@@ -81,7 +80,7 @@ export default class ChatMessage extends Vue {
   type?: string
   @Prop({
     type: String,
-    default: () => new Date().get
+    default: () => ""
   })
   time?: string
 }

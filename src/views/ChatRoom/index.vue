@@ -22,6 +22,7 @@
       </div>
 
       <div class="chat-user">
+        <div>当前用户{{ userList.length }}</div>
         <user-card
           v-for="(user, key, index) in userList"
           :key="index"
@@ -192,6 +193,7 @@ export default class ChatRoom extends Vue {
     width: 800px;
     height: 600px;
     position: relative;
+    background-color: rgb(255, 255, 255);
     .chat-name {
       height: 100px;
       width: 800px;
