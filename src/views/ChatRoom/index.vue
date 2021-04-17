@@ -59,9 +59,9 @@
             class="upload-image"
             :before-upload="beforeUpload"
             :show-file-list="false"
-            action="http://127.0.0.1:3000/singup"
+            action="http://127.0.0.1:3000/uploadPic"
             :data="{ roomName: roomName }"
-            name="singleFile"
+            name="uploadPic"
             :on-success="fileUploadSuccess"
             accept=".jpg,.jpeg,.png,.gif,.bmp,.JPG,.JPEG,.GIF,.BMP"
           >
