@@ -4,7 +4,7 @@
       <div class="chat-name">
         <h1>roomName:{{ roomName }}</h1>
       </div>
-
+      <!-- 聊天内容 -->
       <div class="chat-content">
         <el-scrollbar style="height:100%" ref="myScrollbar">
           <chat-message
@@ -20,9 +20,11 @@
           </chat-message>
         </el-scrollbar>
       </div>
-
+      <!-- 当前聊天用户 -->
       <div class="chat-user">
-        <div>当前用户{{ userList.length }}</div>
+        <div>
+          当前用户<span style="margin-left:5px">{{ userLength }}名</span>
+        </div>
         <user-card
           v-for="(user, key, index) in userList"
           :key="index"
@@ -33,14 +35,24 @@
       </div>
       <div class="chat-send">
         <div class="chat-send-content">
-          <el-input
+          <!-- <el-input
             type="textarea"
             resize="none"
             v-model="chatSendContent"
             @keypress.enter.native="sendMessage($event)"
             :autosize="{ minRows: 4, maxRows: 4 }"
             placeholder="请输入要发送的内容..."
-          ></el-input>
+          ></el-input> -->
+          <div
+            ref="userInput"
+            id="user-input"
+            contenteditable="true"
+            @keypress.enter.exact="sendMessage($event)"
+            v-html="chatSendContent"
+            @input="inputMessage($event)"
+            @focus="isDivChange = false"
+            @blur="userInputBlur($event)"
+          ></div>
         </div>
         <div class="chat-send-file">
           <el-upload
@@ -55,8 +67,25 @@
           >
             <i class="el-icon-picture" @click="sendFile"></i>
           </el-upload>
-
-          <i class="el-icon-files"></i>
+          <div class="emoji emoji-class">
+            <el-popover placement="top-start" width="200" trigger="click">
+              <img
+                slot="reference"
+                class="img"
+                src="@/assets/emoji.svg"
+                alt=""
+              />
+              <span
+                class="emoji-class"
+                v-for="(item, index) in emojiList"
+                :key="index"
+                @click="emojiClick($event, item)"
+              >
+                {{ item }}
+              </span>
+            </el-popover>
+          </div>
+          <i class="el-icon-files emoji-class"></i>
         </div>
         <div class="chat-send-button">
           <el-button>关闭</el-button>
@@ -83,14 +112,90 @@ export default class ChatRoom extends Vue {
   chatSendContent = ""
   roomName = ""
   //当前用户在线列表
-  userList: any = []
+  userList: any = {}
   socket: any
   chatList: any = []
+  emojiList = [
+    "😃",
+    "😄",
+    "😅",
+    "😆",
+    "😉",
+    "😊",
+    "😋",
+    "😎",
+    "😍",
+    "😘",
+    "😗",
+    "😙",
+    "😚",
+    "😇",
+    "😐",
+    "😑",
+    "😶",
+    "😏",
+    "😣",
+    "😥",
+    "😮",
+    "😯",
+    "😪",
+    "😫",
+    "😴",
+    "😌",
+    "😛",
+    "😜",
+    "😝",
+    "😒",
+    "😓",
+    "😔",
+    "😕",
+    "😲",
+    "😷",
+    "😖",
+    "😞",
+    "😟",
+    "😤",
+    "😢",
+    "😭",
+    "😦",
+    "😧",
+    "😨",
+    "😬",
+    "😰",
+    "😱",
+    "😳",
+    "😵",
+    "😡",
+    "😠"
+  ]
+  isDivChange = true //判断是否正在输入
   //退出当前房间
+  get userLength() {
+    return Object.keys(this.userList).length
+  }
+  emojiClick(e: any, item: any) {
+    const text = this.$refs.userInput as any
+    console.log((text.innerHTML += item))
+  }
   quitRoom() {
     this.$router.push({ name: "Register" })
   }
+  inputMessage(e: any) {
+    if (this.isDivChange) {
+      this.chatSendContent = e.target.innerHTML
+    }
+  }
+  userInputBlur(e: any) {
+    this.isDivChange = true
+    this.chatSendContent = e.target.innerHTML
+  }
+  insertBr(e: any) {
+    console.log("asdas")
+    e.target.innerHTML += "\n"
+  }
   sendMessage($event: any) {
+    console.log(this.emojiList.length)
+    this.chatSendContent = $event.target.innerHTML
     if (this.chatSendContent.match(/^[\s]*$/)) {
       //如果全是空格或者空白符
       console.log("不发送")
@@ -104,6 +209,7 @@ export default class ChatRoom extends Vue {
       $event.preventDefault() // 阻止浏览器默认换行操作
     }
     this.chatSendContent = ""
+    $event.target.innerHTML = ""
   }
 
   sendFile() {
@@ -161,6 +267,7 @@ export default class ChatRoom extends Vue {
         this.$nextTick(() => {
           scrollBar.wrap.scrollTop = scrollBar.wrap.scrollHeight
         })
+        console.log("this.userList", this.userList)
       })
       //发送用户名称
       this.socket.emit("addNewUserServer", {
@@ -177,6 +284,12 @@ export default class ChatRoom extends Vue {
 </script>
 
 <style lang="scss" scoped>
+[contenteditable]:focus {
+  outline: none;
+}
+.emoji-class {
+  cursor: pointer;
+}
 ::v-deep .el-scrollbar__wrap {
   overflow-y: auto;
   overflow-x: hidden;
@@ -222,11 +335,30 @@ export default class ChatRoom extends Vue {
       width: 600px;
       height: 100px;
       // border: 1px red solid;
-
+      .chat-send-content {
+        #user-input {
+          overflow-x: hidden;
+          height: 85px;
+          width: 590px;
+          margin: 20px 5px 5px 5px;
+        }
+      }
       .chat-send-file {
+        display: flex;
+        // background-color: rgb(255, 255, 255);
+        align-content: flex-start;
         .upload-image {
           display: inline-block;
           margin-right: 5px;
+        }
+        .emoji {
+          width: 16px;
+          height: 16px;
+          margin-right: 5px;
+          .img {
+            width: 100%;
+            height: auto;
+          }
         }
         width: 600px;
         position: inherit;

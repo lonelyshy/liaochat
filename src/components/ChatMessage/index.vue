@@ -8,11 +8,12 @@
       </div>
       <div class="right-content">
         <div class="user-name">
+          <span></span>
           <span>{{ userName }}</span>
           <span style="margin-left:5px">{{ time }}</span>
         </div>
-        <div class="user-content">
-          <div v-if="type == 'txt'">{{ data }}</div>
+        <div class="user-content" style="padding-left:60px">
+          <div v-if="type == 'txt'" v-html="data"></div>
           <div v-if="type == 'image'">
             <el-image
               style="width: 100px; height: 100px"
@@ -31,11 +32,12 @@
       </div>
       <div class="right-content">
         <div class="user-name">
+          <span></span>
           <span style="margin-right:5px">{{ time }}</span>
           <span> {{ userName }}</span>
         </div>
-        <div class="user-content">
-          <div v-if="type == 'txt'">{{ data }}</div>
+        <div class="user-content" style="padding-right:60px">
+          <div v-if="type == 'txt'" v-html="data"></div>
           <div v-if="type == 'image'">
             <el-image
               style="width: 100px; height: 100px"
@@ -88,6 +90,7 @@ export default class ChatMessage extends Vue {
 
 <style lang="scss" scoped>
 .chat-message {
+  margin-top: 5px;
   border: 1px solid blue;
   width: 590px;
   min-height: 70px;
@@ -108,6 +111,9 @@ export default class ChatMessage extends Vue {
     .left-content {
       margin: 5px 8px 0px 8px;
       float: right;
+      .user-content {
+        padding-left: 50px;
+      }
       .img {
         width: 35px;
         height: 35px;
@@ -117,6 +123,10 @@ export default class ChatMessage extends Vue {
     }
     .right-content {
       text-align: right;
+      .user-name {
+        display: flex;
+        justify-content: space-between;
+      }
     }
   }
 }
