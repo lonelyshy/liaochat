@@ -18,6 +18,7 @@
             :time="item.time"
           >
           </chat-message>
+          <!-- <chat-message type="file"></chat-message> -->
         </el-scrollbar>
       </div>
       <!-- 当前聊天用户 -->
@@ -57,12 +58,12 @@
         <div class="chat-send-file">
           <el-upload
             class="upload-image"
-            :before-upload="beforeUpload"
+            :before-upload="beforePicUpload"
             :show-file-list="false"
             action="http://127.0.0.1:3000/uploadPic"
             :data="{ roomName: roomName }"
             name="uploadPic"
-            :on-success="fileUploadSuccess"
+            :on-success="picUploadSuccess"
             accept=".jpg,.jpeg,.png,.gif,.bmp,.JPG,.JPEG,.GIF,.BMP"
           >
             <i class="el-icon-picture" @click="sendFile"></i>
@@ -85,7 +86,18 @@
               </span>
             </el-popover>
           </div>
-          <i class="el-icon-files emoji-class"></i>
+          <el-upload
+            class="upload-file"
+            :before-upload="beforeFileUpload"
+            :show-file-list="false"
+            action="http://127.0.0.1:3000/uploadFile"
+            :data="{ roomName: roomName }"
+            name="uploadFile"
+            :on-success="fileUploadSuccess"
+            accept="*"
+          >
+            <i class="el-icon-files emoji-class"></i>
+          </el-upload>
         </div>
         <div class="chat-send-button">
           <el-button>关闭</el-button>
@@ -215,7 +227,7 @@ export default class ChatRoom extends Vue {
   sendFile() {
     console.log("sendFile")
   }
-  fileUploadSuccess(response: any, file: any, fileList: any) {
+  picUploadSuccess(response: any, file: any, fileList: any) {
     //code为0上传成功
     if (response.code === 0) {
       console.log(response)
@@ -226,7 +238,19 @@ export default class ChatRoom extends Vue {
       console.log("")
     }
   }
-  beforeUpload(file: any) {
+  fileUploadSuccess(response: any, file: any, fileList: any) {
+    //code为0上传成功
+    if (response.code === 0) {
+      console.log(response)
+      console.log(file)
+      this.socket.emit("sendMessageServer", {
+        type: "file",
+        data: { path: response.data.path.path, fileName: file.name }
+      })
+      console.log("")
+    }
+  }
+  beforePicUpload(file: any) {
     console.log(file)
     const isJPG = file.type === "image/jpeg" || file.type === "image/png"
     const isLt2M = file.size / 1024 / 1024 < 2
@@ -238,6 +262,16 @@ export default class ChatRoom extends Vue {
       this.$message.error("上传头像图片大小不能超过 2MB!")
     }
     return isJPG && isLt2M
+  }
+  beforeFileUpload(file: any) {
+    console.log(file)
+
+    const isLt2M = file.size / 1024 / 1024 < 50
+
+    if (!isLt2M) {
+      this.$message.error("上传头像图片大小不能超过 2MB!")
+    }
+    return isLt2M
   }
   created() {
     this.roomName = this.$route.query.roomName as string
@@ -262,7 +296,6 @@ export default class ChatRoom extends Vue {
         data.direction = socketId === this.socket.id ? "right" : "left" //判断消息在左还是右边
         data.time = Utils.getNowTime()
         this.chatList.push(data)
-        console.log(this.chatList)
         const scrollBar = this.$refs.myScrollbar as any
         this.$nextTick(() => {
           scrollBar.wrap.scrollTop = scrollBar.wrap.scrollHeight
