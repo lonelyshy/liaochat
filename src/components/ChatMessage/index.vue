@@ -17,7 +17,7 @@
           <div v-if="type == 'image'">
             <el-image
               style="width: 100px; height: 100px"
-              :src="'http://127.0.0.1:3000/' + data.imagePath"
+              :src="'http://127.0.0.1:3000/' + data.path"
               fit="fit"
             ></el-image>
           </div>
@@ -39,6 +39,20 @@
                 >您已经成功上传,请尽快下载</span
               >
             </div>
+          </div>
+          <div v-if="type == 'sound'" class="sound" @click="soundClick">
+            <span>{{ soundTime }}"</span>
+            <img
+              src="@/assets/sound.png"
+              style="width:40px;margin-left:10px"
+              alt=""
+            />
+
+            <i
+              v-if="isPlaying"
+              class="el-icon-loading"
+              style="margin-left:5px"
+            ></i>
           </div>
         </div>
       </div>
@@ -83,6 +97,19 @@
               >
             </div>
           </div>
+          <div v-if="type == 'sound'" class="sound" @click="soundClick">
+            <i
+              v-if="isPlaying"
+              class="el-icon-loading"
+              style="margin-right:5px"
+            ></i>
+            <img
+              src="@/assets/sound.png"
+              style="width:40px;margin-right:10px"
+              alt=""
+            />
+            <span>{{ soundTime }}"</span>
+          </div>
         </div>
       </div>
     </div>
@@ -123,6 +150,30 @@ export default class ChatMessage extends Vue {
     default: () => ""
   })
   time?: string
+
+  sound: any = "" //保存音频
+  isPlaying = false //音频是否正在播放
+  soundTime: any = ""
+  async soundClick() {
+    if (this.isPlaying) {
+      this.sound.pause() //暂停播放
+      this.isPlaying = false
+    } else {
+      await this.sound.play().then(() => {
+        console.log("播放完成")
+      })
+      this.isPlaying = true
+    }
+  }
+  async mounted() {
+    if (this.type == "sound") {
+      this.sound = new Audio("http://127.0.0.1:3000/" + this.data.path)
+      this.soundTime = Math.round(this.data.duration)
+      this.sound.addEventListener("ended", () => {
+        this.isPlaying = false
+      })
+    }
+  }
 }
 </script>
 
@@ -152,6 +203,13 @@ export default class ChatMessage extends Vue {
       display: block;
       z-index: 20;
     }
+  }
+}
+.sound {
+  border: 1px solid black;
+  padding: 10px;
+  .sound-audio {
+    visibility: hidden;
   }
 }
 .chat-message {
