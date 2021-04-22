@@ -19,6 +19,40 @@ const utils = {
     dateTime = yy + "-" + mm + "-" + dd + " " + hh + ":" + mf + ":" + ss
     console.log(dateTime)
     return dateTime
+  },
+  compareListMore(
+    oldList: Array<any>,
+    newList: Array<any>,
+    userList: any,
+    data: any
+  ) {
+    //旧的比新的多 那么就表明有人退出了
+    //返回退出的人 少的人
+    const LessList: any = []
+    oldList.forEach((item: any) => {
+      //
+      if (!newList.includes(item)) {
+        LessList.push(userList[item].userName)
+      }
+    })
+    return LessList
+  },
+  compareListLess(
+    oldList: Array<any>,
+    newList: Array<any>,
+    userList: any,
+    data: any
+  ) {
+    //旧的比新的少 那么就表明有人新来了
+    //返回新来的人
+    const MoreList: any = []
+    newList.forEach((item: any) => {
+      //
+      if (!oldList.includes(item)) {
+        MoreList.push(data[item].userName)
+      }
+    })
+    return MoreList
   }
 }
 

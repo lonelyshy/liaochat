@@ -142,6 +142,7 @@ import UserCard from "../../components/UserCard/index.vue"
 import Utils from "@/utils/utils"
 import Recorder from "js-audio-recorder" //导入音频记录插件
 import Axios from "axios"
+import utils from "@/utils/utils"
 @Component({
   name: "chatRoom",
   components: {
@@ -399,8 +400,30 @@ export default class ChatRoom extends Vue {
       console.log(this.socket)
       // this.socket.emit("sendMessage", "这是一条新消息")
       this.socket.on("addNewUserclient", (data: any) => {
+        const oldList = Object.keys(this.userList)
+        const newList = Object.keys(data)
+        const userList =
+          oldList.length > newList.length
+            ? utils.compareListMore(oldList, newList, this.userList, data)
+            : utils.compareListLess(oldList, newList, this.userList, data)
         this.userList = data
         console.log("addNewUserclient this.userList", this.userList)
+        console.log("userList", userList)
+        if (oldList.length > newList.length) {
+          //有人退出了
+          this.$notify({
+            title: "通知",
+            message: userList.join(",") + "退出了房间",
+            type: "warning"
+          })
+        } else {
+          //有人进入了
+          this.$notify({
+            title: "通知",
+            message: userList.join(",") + "进入了房间",
+            type: "success"
+          })
+        }
       })
       this.socket.on("sendMessageClient", (data1: any) => {
         //收到消息
