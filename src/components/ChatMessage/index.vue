@@ -8,9 +8,8 @@
       </div>
       <div class="right-content">
         <div class="user-name">
-          <span></span>
           <span>{{ userName }}</span>
-          <span style="margin-left:5px">{{ time }}</span>
+          <span style="margin-left:10px">{{ time }}</span>
         </div>
         <div class="user-content" style="padding-left:60px">
           <div v-if="type == 'txt'" v-html="data"></div>
@@ -67,8 +66,7 @@
       </div>
       <div class="right-content">
         <div class="user-name">
-          <span></span>
-          <span style="margin-right:5px">{{ time }}</span>
+          <span style="margin-right:10px">{{ time }}</span>
           <span> {{ userName }}</span>
         </div>
         <div class="user-content" style="padding-right:60px">
@@ -217,9 +215,12 @@ export default class ChatMessage extends Vue {
   }
 }
 .chat-message {
-  margin-top: 5px;
-  border: 1px solid blue;
-  width: 590px;
+  margin: 5px 0px;
+  // border: 1px solid blue;
+  padding: 5px;
+  border-radius: 20px;
+  box-shadow: 0 8px 10px 0 rgb(0 0 0 / 10%);
+  width: 580px;
   min-height: 70px;
   word-wrap: break-word;
   .left {
@@ -250,10 +251,6 @@ export default class ChatMessage extends Vue {
     }
     .right-content {
       text-align: right;
-      .user-name {
-        display: flex;
-        justify-content: space-between;
-      }
     }
   }
 }

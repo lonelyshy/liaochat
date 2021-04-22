@@ -25,6 +25,9 @@ export default class UserCard extends Vue {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  margin-top: 5px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px 0 rgb(0 0 0 / 10%);
   .user-icon {
     width: 30px;
     height: 30px;

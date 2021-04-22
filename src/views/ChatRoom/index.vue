@@ -2,7 +2,7 @@
   <div class="chat-room">
     <div class="chat">
       <div class="chat-name">
-        <h1>roomName:{{ roomName }}</h1>
+        <h1>房间名:{{ roomName }}</h1>
       </div>
       <!-- 聊天内容 -->
       <div class="chat-content">
@@ -23,7 +23,7 @@
       </div>
       <!-- 当前聊天用户 -->
       <div class="chat-user">
-        <div>
+        <div style="margin-bottom:10px">
           当前用户<span style="margin-left:5px">{{ userLength }}名</span>
         </div>
         <user-card
@@ -450,7 +450,7 @@ export default class ChatRoom extends Vue {
   align-items: center;
   .chat {
     overflow: hidden;
-    border: 2px solid black;
+    border-radius: 10px;
     width: 800px;
     height: 600px;
     position: relative;
@@ -459,21 +459,24 @@ export default class ChatRoom extends Vue {
       height: 100px;
       width: 800px;
       top: 0px;
-      border: 1px solid red;
+      border-bottom: 1px solid gainsboro;
       position: absolute;
+      display: flex;
+      justify-content: center;
     }
     .chat-content {
       height: 350px;
       width: 600px;
       top: 100px;
-      border: 1px solid blueviolet;
+      border-bottom: 1px solid gainsboro;
       position: absolute;
     }
     .chat-user {
+      padding: 5px;
       position: absolute;
       height: 500px;
-      width: 198px;
-      border: 1px solid blueviolet;
+      width: 188px;
+      border-left: 1px solid gainsboro;
       top: 100px;
       right: 0px;
     }
@@ -488,7 +491,7 @@ export default class ChatRoom extends Vue {
           overflow-x: hidden;
           height: 85px;
           width: 590px;
-          margin: 20px 5px 5px 5px;
+          margin: 25px 5px 0px 5px;
         }
       }
       .chat-send-file {
