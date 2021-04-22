@@ -32,7 +32,9 @@
                 target="_black"
                 >{{ data.fileName }}
               </a>
-              <span class="size" style="margin-left:5px">(112.12kb)</span>
+              <span class="size" style="margin-left:5px"
+                >{{ data.size }}MB</span
+              >
             </div>
             <div>
               <span style="margin-left:10px" class="size"
@@ -89,7 +91,9 @@
                 target="_black"
                 >{{ data.fileName }}
               </a>
-              <span class="size" style="margin-left:5px">(112.12kb)</span>
+              <span class="size" style="margin-left:5px"
+                >{{ data.size }}MB</span
+              >
             </div>
             <div>
               <span style="margin-left:10px" class="size"

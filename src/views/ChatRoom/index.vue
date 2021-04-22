@@ -347,9 +347,14 @@ export default class ChatRoom extends Vue {
     if (response.code === 0) {
       console.log(response)
       console.log(file)
+      console.log(response.data)
       this.socket.emit("sendMessageServer", {
         type: "file",
-        data: { path: response.data.path.path, fileName: file.name }
+        data: {
+          path: response.data.path.path,
+          fileName: file.name,
+          size: (response.data.path.size / 1024 / 1024).toFixed(2)
+        }
       })
       console.log("")
     }
