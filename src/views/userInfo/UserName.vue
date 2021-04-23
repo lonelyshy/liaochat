@@ -33,10 +33,18 @@ export default class UserName extends Vue {
     const params = {
       name: this.userName
     }
-    const res = await API.queryRoom(params) //查询用户名是否重复
+    if (this.userName == "") {
+      this.$message({
+        message: "用户名不能为空",
+        type: "error"
+      })
+      this.loading = false //加载动画结束
+      return false
+    }
+    const res = await API.queryUserName(params) //查询用户名是否重复
 
     this.loading = false //加载动画结束
-    if (!res.data.code) {
+    if (res.data.code) {
       this.$message({
         message: "用户名重复",
         type: "error"
