@@ -13,6 +13,9 @@ const routes: Array<RouteConfig> = [
       return import(
         /* webpackChunkName: "about" */ "../views/register/index.vue"
       )
+    },
+    meta: {
+      title: "选择聊天室"
     }
   },
   {
@@ -22,6 +25,9 @@ const routes: Array<RouteConfig> = [
       return import(
         /* webpackChunkName: "about" */ "../views/userInfo/UserName.vue"
       )
+    },
+    meta: {
+      title: "请输入用户名"
     }
   },
   {
@@ -50,6 +56,9 @@ const routes: Array<RouteConfig> = [
       return import(
         /* webpackChunkName: "ChatRoom" */ "../views/ChatRoom/index.vue"
       )
+    },
+    meta: {
+      title: "欢迎来到聊天室"
     }
   }
 ]
@@ -65,8 +74,19 @@ router.beforeEach((to, from, next) => {
     //
     next()
   } else if ((store.state as any).userInfo.userName === "") {
-    console.log("当前还没有注册")
-    next({ path: "/UserName" })
+    console.log("没有用户名称")
+    if (sessionStorage.getItem("liaoliaochat")) {
+      //如果有cookie信息 判断有没有过期
+      const obj = JSON.parse(sessionStorage.getItem("liaoliaochat") as any)
+      if (new Date().getTime() - obj.time < 60000 * 30) {
+        //如果cookie的时间没有过期 < 半个小时
+        next()
+      } else {
+        next({ path: "/UserName" })
+      }
+    } else {
+      next({ path: "/UserName" })
+    }
   } else {
     next()
   }

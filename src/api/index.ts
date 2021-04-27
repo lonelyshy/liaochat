@@ -6,7 +6,9 @@ const API = {
   //增加房间
   queryRoom: (params: any) => Axios.get("/queryRoom", { params }),
   //查询用户名是否重复
-  queryUserName: (params: any) => Axios.get("/queryUserName", { params })
+  queryUserName: (params: any) => Axios.get("/queryUserName", { params }),
+  //获取所有icon给用户选择
+  getIconList: () => Axios.get("/getIconList", {})
 }
 
 export default API

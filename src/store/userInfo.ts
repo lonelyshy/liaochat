@@ -2,7 +2,7 @@ const userInfo = {
   namespaced: true,
   state: () => ({
     userName: "",
-    userPicUrl: "",
+    userIcon: "",
     socket: ""
   }),
   mutations: {
@@ -12,6 +12,9 @@ const userInfo = {
     },
     UPDATE_SOCKET(state: any, socket: any) {
       state.socket = socket
+    },
+    UPDATE_USERICON(state: any, userIcon: any) {
+      state.userIcon = userIcon
     }
   },
   actions: {}

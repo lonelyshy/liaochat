@@ -13,7 +13,7 @@
       <el-input
         v-show="chatVisible"
         v-model="chatName"
-        placeholder="请输入聊天室名称"
+        placeholder="请输入创建的聊天室名称"
         @keypress.enter.native="creatChatRoom"
         class="created-chat-body"
       >
@@ -47,7 +47,7 @@
       <el-input
         v-show="joinChatVisible"
         v-model="chatId"
-        placeholder="请输入聊天室名称"
+        placeholder="请输入加入的聊天室名称"
         @keypress.enter.native="joinChatRoom"
         class="join-chat-body"
       >
@@ -95,6 +95,14 @@ export default class Register extends Vue {
     const params = {
       name: this.chatName
     }
+    if (this.chatName == "") {
+      this.$message({
+        showClose: true,
+        message: "创建失败，聊天室名称不能为空",
+        type: "error"
+      })
+      return false
+    }
     try {
       const res = await API.addRoom(params)
       if (!res.data.code) {
@@ -121,6 +129,14 @@ export default class Register extends Vue {
   async joinChatRoom() {
     const params = {
       name: this.chatId
+    }
+    if (this.chatId == "") {
+      this.$message({
+        showClose: true,
+        message: "加入房间失败，聊天室名称不能为空",
+        type: "error"
+      })
+      return false
     }
     try {
       const res = await API.queryRoom(params)
@@ -149,6 +165,7 @@ export default class Register extends Vue {
   }
   mounted() {
     console.log(this.$store.state.userInfo)
+    window.document.title = "选择聊天室"
   }
 }
 </script>

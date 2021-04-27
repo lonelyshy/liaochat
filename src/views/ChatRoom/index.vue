@@ -127,7 +127,7 @@
           </div>
         </div>
         <div class="chat-send-button">
-          <el-button>关闭</el-button>
+          <el-button @click="close">关闭</el-button>
           <el-button @click="sendMessage">发送</el-button>
         </div>
       </div>
@@ -143,6 +143,7 @@ import Utils from "@/utils/utils"
 import Recorder from "js-audio-recorder" //导入音频记录插件
 import Axios from "axios"
 import utils from "@/utils/utils"
+import Cookies from "js-cookie"
 @Component({
   name: "chatRoom",
   components: {
@@ -312,7 +313,7 @@ export default class ChatRoom extends Vue {
   }
   sendMessage($event: any) {
     console.log(this.emojiList.length)
-    this.chatSendContent = $event.target.innerHTML
+    this.chatSendContent = (this.$refs.userInput as any).innerHTML
     if (this.chatSendContent.match(/^[\s]*$/)) {
       //如果全是空格或者空白符
       console.log("不发送")
@@ -326,7 +327,7 @@ export default class ChatRoom extends Vue {
       $event.preventDefault() // 阻止浏览器默认换行操作
     }
     this.chatSendContent = ""
-    $event.target.innerHTML = ""
+    ;(this.$refs.userInput as any).innerHTML = ""
   }
 
   sendFile() {
@@ -383,13 +384,45 @@ export default class ChatRoom extends Vue {
     }
     return isLt2M
   }
+  close() {
+    console.log("关闭")
+  }
   created() {
     this.roomName = this.$route.query.roomName as string
+    if (this.$store.state.userInfo.userName) {
+      //如果没有用户名 可能是刷新了 所以要从sessionStorage里面取名字
+    } else {
+      console.log(sessionStorage.getItem("liaoliaochat"))
+      this.$store.commit(
+        "userInfo/UPDATE_USER_NAME",
+        JSON.parse(sessionStorage.getItem("liaoliaochat") as any).userName
+      ),
+        this.$store.commit(
+          "userInfo/UPDATE_USERICON",
+          JSON.parse(sessionStorage.getItem("liaoliaochat") as any).userIcon
+        )
+    }
+    window.document.title = this.roomName
     this.soundRecorder = new Recorder({
       sampleBits: 16, // 采样位数，支持 8 或 16，默认是16
       sampleRate: 48000, // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值，我的chrome是48000
       numChannels: 2 // 声道，支持 1 或 2， 默认是1
     })
+    const history = sessionStorage.getItem(
+      this.$store.state.userInfo.userName + "localchat" + this.roomName
+    )
+    if (history) {
+      this.chatList = JSON.parse(history)
+    }
+    sessionStorage.setItem(
+      "liaoliaochat",
+      JSON.stringify({
+        roomName: this.roomName, //用户房间名
+        userName: this.$store.state.userInfo.userName, //用户名
+        userIcon: this.$store.state.userInfo.userIcon, //头像
+        time: new Date().getTime()
+      })
+    )
     try {
       const io = require("socket.io-client")
       this.socket = io("http://localhost:3000", {
@@ -407,8 +440,8 @@ export default class ChatRoom extends Vue {
             ? utils.compareListMore(oldList, newList, this.userList, data)
             : utils.compareListLess(oldList, newList, this.userList, data)
         this.userList = data
+
         console.log("addNewUserclient this.userList", this.userList)
-        console.log("userList", userList)
         if (oldList.length > newList.length) {
           //有人退出了
           this.$notify({
@@ -427,12 +460,26 @@ export default class ChatRoom extends Vue {
       })
       this.socket.on("sendMessageClient", (data1: any) => {
         //收到消息
+        sessionStorage.setItem(
+          "liaoliaochat",
+          JSON.stringify({
+            roomName: this.roomName, //用户房间名
+            userName: this.$store.state.userInfo.userName, //用户名
+            userIcon: this.$store.state.userInfo.userIcon, //头像
+            time: new Date().getTime()
+          })
+        )
         const { socketId, data } = data1
         data.userName = this.userList[socketId].userName
         data.userIcon = this.userList[socketId].userIcon
         data.direction = socketId === this.socket.id ? "right" : "left" //判断消息在左还是右边
         data.time = Utils.getNowTime()
         this.chatList.push(data)
+        sessionStorage.setItem(
+          //将聊天记录存储到sessionStorage中
+          this.$store.state.userInfo.userName + "localchat" + this.roomName,
+          JSON.stringify(this.chatList)
+        )
         console.log("data", data)
         const scrollBar = this.$refs.myScrollbar as any
         this.$nextTick(() => {
@@ -443,6 +490,9 @@ export default class ChatRoom extends Vue {
       //发送用户名称
       this.socket.emit("addNewUserServer", {
         userName: this.$store.state.userInfo.userName
+          ? this.$store.state.userInfo.userName
+          : JSON.parse(sessionStorage.getItem("liaoliaochat") as any).userName,
+        userIcon: this.$store.state.userInfo.userIcon
       })
     } catch (error) {
       console.log(error)

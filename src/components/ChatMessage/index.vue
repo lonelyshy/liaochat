@@ -208,7 +208,7 @@ export default class ChatMessage extends Vue {
   }
 }
 .sound {
-  border: 1px solid black;
+  // border: 1px solid black;
   padding: 10px;
   .sound-audio {
     visibility: hidden;
