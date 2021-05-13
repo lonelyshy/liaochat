@@ -112,5 +112,8 @@ export default class UserName extends Vue {
   width: 35px;
   height: 35px;
   border-radius: 10px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 </style>
