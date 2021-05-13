@@ -1,24 +1,11 @@
-# ll
-
-## Project setup
-```
+# liaoChat
+聊聊网页端前端代码
+# 启动项目
+先安装依赖
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
+运行项目
 npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lintd
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# v1.0.0 
+正式发布
+# v1.0.1
+更新markdown
